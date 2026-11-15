@@ -1,0 +1,223 @@
+/* Estilos adicionais para páginas com sidebar */
+:root {
+    --verde-escuro: #14532d;
+    --verde-hover: #166534;
+    --verde: #16a34a;
+    --verde-claro: #dcfce7;
+    --vermelho: #dc2626;
+    --vermelho-claro: #fee2e2;
+    --cinza: #9ca3af;
+    --fundo: #f4f7f5;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: row;
+}
+
+aside {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background-color: var(--verde-escuro);
+    color: white;
+    height: 100vh;
+}
+
+#sidebar a {
+    color: white;
+    text-decoration: none;
+}
+
+#sidebar a:hover {
+    background-color: var(--verde-hover);
+    color: white;
+}
+
+#sidebar .nav-item .submenu {
+    display: none;
+    padding-left: 1.5rem;
+}
+
+#sidebar .nav-item.open .submenu {
+    display: block;
+}
+
+#content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.pagina-dashboard {
+    background-color: var(--fundo);
+}
+
+.conteudo-dashboard {
+    flex-grow: 1;
+    min-width: 0;
+    padding: 24px;
+}
+
+.titulo-pagina {
+    color: var(--verde-escuro);
+    font-weight: 700;
+}
+
+.btn-verde {
+    background-color: var(--verde);
+    border-color: var(--verde);
+    color: white;
+}
+
+.btn-verde:hover,
+.btn-verde:focus {
+    background-color: var(--verde-hover);
+    border-color: var(--verde-hover);
+    color: white;
+}
+
+.form-check-input:checked {
+    background-color: var(--verde);
+    border-color: var(--verde);
+}
+
+.card-painel {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.titulo-card {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.card-indicador {
+    border: none;
+    border-left: 5px solid var(--verde-escuro);
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    height: 100%;
+}
+
+.card-indicador .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.rotulo-indicador {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.valor-indicador {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.borda-verde {
+    border-left-color: var(--verde);
+}
+
+.borda-vermelha {
+    border-left-color: var(--vermelho);
+}
+
+.borda-vermelha-clara {
+    border-left-color: #f87171;
+}
+
+.borda-cinza {
+    border-left-color: var(--cinza);
+}
+
+.texto-verde {
+    color: var(--verde);
+}
+
+.texto-vermelho {
+    color: var(--vermelho);
+}
+
+.area-grafico {
+    position: relative;
+    height: 300px;
+}
+
+.etiqueta {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.etiqueta-aberto {
+    background-color: var(--vermelho-claro);
+    color: var(--vermelho);
+}
+
+.etiqueta-andamento {
+    background-color: #fff1f1;
+    color: #b45353;
+    border: 1px solid #f87171;
+}
+
+.etiqueta-concluido {
+    background-color: var(--verde-claro);
+    color: var(--verde-escuro);
+}
+
+.etiqueta-cancelado {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
+.texto-consideracao {
+    color: #4b5563;
+    min-width: 200px;
+}
+
+@media (max-width: 768px) {
+    aside {
+        position: static;
+        height: auto;
+    }
+
+    #sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        height: 100%;
+        z-index: 1000;
+        transition: all 0.3s;
+    }
+
+    #sidebar.active {
+        left: 0;
+    }
+
+    #content {
+        margin-left: 0;
+    }
+
+    .conteudo-dashboard {
+        padding: 64px 16px 16px;
+    }
+
+    .toggle-btn {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1100;
+        cursor: pointer;
+    }
+}
