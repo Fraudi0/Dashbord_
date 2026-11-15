@@ -1,10 +1,12 @@
 package com.pfc.thindesk.service;
 
 import com.pfc.thindesk.entity.Chamado;
+import com.pfc.thindesk.repository.ChamadoRepository;
+import com.pfc.thindesk.util.StatusChamado;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import com.pfc.thindesk.repository.ChamadoRepository;
 
 @Service
 public class ChamadoService {
@@ -13,6 +15,10 @@ public class ChamadoService {
     private ChamadoRepository chamadoRepository;
 
     public Chamado criarChamado(Chamado chamado) {
+        if (chamado.getDataAbertura() == null) {
+            chamado.setDataAbertura(LocalDateTime.now());
+        }
+        ajustarStatus(chamado);
         return chamadoRepository.save(chamado);
     }
 
@@ -28,9 +34,30 @@ public class ChamadoService {
                     chamado.setTipo(chamadoAtualizado.getTipo());
                     chamado.setTecnico(chamadoAtualizado.getTecnico());
                     chamado.setUsuario(chamadoAtualizado.getUsuario());
+                    if (chamadoAtualizado.getPrioridade() != null) {
+                        chamado.setPrioridade(chamadoAtualizado.getPrioridade());
+                    }
+                    if (chamadoAtualizado.getConsideracoesTecnicas() != null) {
+                        chamado.setConsideracoesTecnicas(chamadoAtualizado.getConsideracoesTecnicas());
+                    }
+                    if (chamado.getDataAbertura() == null) {
+                        chamado.setDataAbertura(LocalDateTime.now());
+                    }
+                    ajustarStatus(chamado);
                     return chamadoRepository.save(chamado);
                 })
                 .orElseThrow(() -> new RuntimeException("Chamado não encontrado com id: " + id));
     }
 
+    private void ajustarStatus(Chamado chamado) {
+        String status = StatusChamado.normalizar(chamado.getStatus());
+        chamado.setStatus(status);
+        boolean finalizado = status.equals(StatusChamado.CONCLUIDO) || status.equals(StatusChamado.CANCELADO);
+        if (finalizado && chamado.getDataFechamento() == null) {
+            chamado.setDataFechamento(LocalDateTime.now());
+        }
+        if (!finalizado) {
+            chamado.setDataFechamento(null);
+        }
+    }
 }
