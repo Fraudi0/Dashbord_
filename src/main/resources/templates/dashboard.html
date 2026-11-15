@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard de Chamados</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+    </head>
+    <body class="pagina-dashboard">
+        <aside>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        </aside>
+
+        <div class="toggle-btn btn btn-dark d-md-none">
+            <span>&#9776;</span>
+        </div>
+
+        <main class="conteudo-dashboard">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+                <div>
+                    <h2 class="titulo-pagina mb-0">Dashboard de Chamados</h2>
+                    <small class="text-muted">Última atualização: <span id="ultimaAtualizacao">-</span></small>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="atualizacaoAutomatica" checked>
+                        <label class="form-check-label" for="atualizacaoAutomatica">Atualizar a cada 1 min</label>
+                    </div>
+                    <button class="btn btn-verde" id="botaoAtualizar">
+                        <i class="bi bi-arrow-clockwise"></i> Atualizar
+                    </button>
+                </div>
+            </div>
+
+            <div class="card card-painel mb-4">
+                <div class="card-body">
+                    <form id="formFiltros" class="row g-3 align-items-end">
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <label for="filtroInicio" class="form-label">Data inicial</label>
+                            <input type="date" class="form-control" id="filtroInicio">
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <label for="filtroFim" class="form-label">Data final</label>
+                            <input type="date" class="form-control" id="filtroFim">
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <label for="filtroStatus" class="form-label">Status</label>
+                            <select class="form-select" id="filtroStatus">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <label for="filtroTipo" class="form-label">Tipo</label>
+                            <select class="form-select" id="filtroTipo">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <label for="filtroTecnico" class="form-label">Técnico</label>
+                            <select class="form-select" id="filtroTecnico">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <label for="filtroAgrupamento" class="form-label">Agrupar gráfico por</label>
+                            <select class="form-select" id="filtroAgrupamento">
+                                <option value="dia">Dia</option>
+                                <option value="mes">Mês</option>
+                            </select>
+                        </div>
+                        <div class="col-12 d-flex gap-2">
+                            <button type="submit" class="btn btn-verde">
+                                <i class="bi bi-funnel"></i> Aplicar filtros
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" id="botaoLimpar">Limpar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="mensagemErro" class="alert alert-danger d-none" role="alert"></div>
+
+            <div id="avisoSemDados" class="alert alert-light border d-none">
+                Nenhum chamado encontrado para esses filtros.
+                <button class="btn btn-sm btn-outline-success ms-2" id="botaoExemplo">Gerar chamados de exemplo</button>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-4 col-xl">
+                    <div class="card card-indicador">
+                        <div class="card-body">
+                            <span class="rotulo-indicador">Total</span>
+                            <span class="valor-indicador" id="indTotal">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl">
+                    <div class="card card-indicador borda-vermelha">
+                        <div class="card-body">
+                            <span class="rotulo-indicador">Abertos</span>
+                            <span class="valor-indicador texto-vermelho" id="indAbertos">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl">
+                    <div class="card card-indicador borda-vermelha-clara">
+                        <div class="card-body">
+                            <span class="rotulo-indicador">Em andamento</span>
+                            <span class="valor-indicador" id="indAndamento">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl">
+                    <div class="card card-indicador borda-verde">
+                        <div class="card-body">
+                            <span class="rotulo-indicador">Concluídos</span>
+                            <span class="valor-indicador texto-verde" id="indConcluidos">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl">
+                    <div class="card card-indicador borda-cinza">
+                        <div class="card-body">
+                            <span class="rotulo-indicador">Cancelados</span>
+                            <span class="valor-indicador" id="indCancelados">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl">
+                    <div class="card card-indicador borda-verde">
+                        <div class="card-body">
+                            <span class="rotulo-indicador">Taxa de conclusão</span>
+                            <span class="valor-indicador" id="indTaxa">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 col-xl">
+                    <div class="card card-indicador borda-verde">
+                        <div class="card-body">
+                            <span class="rotulo-indicador">Tempo médio</span>
+                            <span class="valor-indicador" id="indTempo">0 h</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-lg-8">
+                    <div class="card card-painel h-100">
+                        <div class="card-body">
+                            <h5 class="titulo-card">Chamados por período</h5>
+                            <div class="area-grafico">
+                                <canvas id="graficoPeriodo"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card card-painel h-100">
+                        <div class="card-body">
+                            <h5 class="titulo-card">Situação dos chamados</h5>
+                            <div class="area-grafico">
+                                <canvas id="graficoStatus"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-lg-6">
+                    <div class="card card-painel h-100">
+                        <div class="card-body">
+                            <h5 class="titulo-card">Tipos de chamados mais atendidos</h5>
+                            <div class="area-grafico">
+                                <canvas id="graficoTipos"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card card-painel h-100">
+                        <div class="card-body">
+                            <h5 class="titulo-card">Atendimentos por técnico</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Técnico</th>
+                                            <th class="text-center">Total</th>
+                                            <th class="text-center">Concluídos</th>
+                                            <th class="text-center">Pendentes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabelaTecnicos"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-painel mb-4">
+                <div class="card-body">
+                    <h5 class="titulo-card">Últimos chamados e considerações técnicas</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Abertura</th>
+                                    <th>Descrição</th>
+                                    <th>Tipo</th>
+                                    <th>Técnico</th>
+                                    <th>Prioridade</th>
+                                    <th>Status</th>
+                                    <th>Considerações técnicas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaRecentes"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script th:src="@{/js/script.js}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+        <script th:src="@{/js/dashboard.js}"></script>
+    </body>
+</html>
